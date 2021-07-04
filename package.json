@@ -1,9 +1,9 @@
 {
-  "name": "gatsby-starter-default",
+  "name": "mesolex-frontend",
   "private": true,
-  "description": "A simple starter to get up and developing quickly with Gatsby",
+  "description": "A standalone search interface for the Mesolex lexicon query app",
   "version": "0.1.0",
-  "author": "Kyle Mathews <mathews.kyle@gmail.com>",
+  "author": "Neil Ashton <nmashton@protonmail.com>",
   "dependencies": {
     "gatsby": "^3.8.1",
     "gatsby-plugin-gatsby-cloud": "^2.8.1",
@@ -24,7 +24,7 @@
     "prettier": "2.2.1"
   },
   "keywords": [
-    "gatsby"
+    "mesolex"
   ],
   "license": "0BSD",
   "scripts": {
@@ -35,12 +35,5 @@
     "serve": "gatsby serve",
     "clean": "gatsby clean",
     "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/gatsbyjs/gatsby-starter-default"
-  },
-  "bugs": {
-    "url": "https://github.com/gatsbyjs/gatsby/issues"
   }
 }
