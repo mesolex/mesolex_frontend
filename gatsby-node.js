@@ -1,7 +1,17 @@
-/**
- * Implement Gatsby's Node APIs in this file.
- *
- * See: https://www.gatsbyjs.com/docs/node-apis/
- */
+const fs = require('fs');
+const yaml = require('js-yaml');
 
-// You can delete this file if you're not using it
+exports.createPages = ({ actions }) => {
+  const { createPage } = actions;
+  const datasets = yaml.load(fs.readFileSync('./datasets/datasets.yml', 'utf-8'));
+
+  datasets.forEach((dataset) => {
+    createPage({
+      path: `/${dataset.code}`,
+      component: require.resolve('./src/pages/search.jsx'),
+      context: {
+        dataset,
+      },
+    });
+  });
+};

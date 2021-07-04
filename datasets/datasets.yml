@@ -1,0 +1,142 @@
+---
+- label: Náhuat de la Sierra Nororiental de Puebla
+  code: azz
+  extra_fields:
+    - field: vln
+      label: Neutralizar cantidad vocálica
+      constraints:
+        - no_regex
+    - field: nahuat_orthography
+      label: Activar flexibilidad ortográfica
+      constraints:
+        - no_regex
+  global_filters:
+    - field: only_with_sound
+      label: Sólo mostrar entradas con sonidos
+  filterable_fields:
+    - field: lemma
+      label: Entrada
+      tag: lemma
+      length: short
+    - field: gloss
+      label: Glosa
+      tag: gloss
+      length: short
+    - field: root
+      label: Raiz
+      tag: root
+      length: short
+    - field: category
+      label: Campo semántico
+      tag: category
+      length: short
+    - field: part_of_speech
+      label: Categoría gramatical
+      tag: part_of_speech
+      length: short
+      items:
+        - value: Adj
+          label: Adjetivo
+        - value: Adv
+          label: Adverbio
+        - value: Aux
+          label: Auxiliar
+        - value: Bebe
+          label: Habla-de-niños
+        - value: Clítico
+          label: Clítico
+        - value: Conjunc
+          label: Conjunción
+        - value: Copula
+          label: Cópula
+        - value: Demostrativo
+          label: Demostrativo
+        - value: Direccional
+          label: Direccional
+        - value: Estativo
+          label: Estativo
+        - value: Interj
+          label: Interjección
+        - value: Interrogativo
+          label: Interrogativo
+        - value: Locativo
+          label: Locativo
+        - value: Modal
+          label: Modal
+        - value: Muletilla
+          label: Muletilla
+        - value: Neg
+          label: Negación
+        - value: Prefijo
+          label: Prefijo
+        - value: Preposición
+          label: Preposición
+        - value: Pronombre
+          label: Pronombre
+        - value: Saludo
+          label: Saludo
+        - value: Subord
+          label: Subordinador
+        - value: Sufijo
+          label: Sufijo
+        - value: Sust
+          label: Sustantivo
+        - value: Terminación aspectual
+          label: Terminación-aspectual
+        - value: Topónimo
+          label: Topónimo
+        - value: V0
+          label: Verbo-impersonal
+        - value: V1
+          label: Verbo-intransitivo
+        - value: V2
+          label: Verbo-transitivo
+        - value: V3
+          label: Verbo-bitransitivo
+        - value: V4
+          label: Verbo-tritransitivo
+        - value: Vocativo
+          label: Vocativo
+    - field: inflectional_type
+      label: Inflexión
+      tag: inflectional_type
+      length: short
+      items:
+        - value: Clase 1
+          label: Verbo clase 1 (kwa)
+        - value: Clase 2a
+          label: Verbo clase 2a (pale:wia)
+        - value: Clase 2b
+          label: Verbo clase 2b (polowa)
+        - value: Clase 3
+          label: Verbo clase 3 (kalaki)
+        - value: Clase 4
+          label: Verbo clase 4 (cho:ka)
+        - value: Clase 4-3
+          label: Verbo clase 4-3 (ki:sa)
+        - value: Clase 4-3/3
+          label: Verbo clase 4-3/3 (pata:ni)
+        - value: N1
+          label: Solamente no posesionado
+        - value: N1, N2
+          label: Posesión enajenable y no enajenable
+        - value: N1=N2
+          label: Posesión enajenable y no enajenable (no cambio de raíz)
+        - value: Oblig        
+          label: Obligatoriamente posesionado
+    - field: precise_meaning
+      label: Significado preciso
+      tag: sense
+      length: long
+    - field: extended_meaning
+      label: Significado extendido
+      tag: extended_meaning
+      length: long
+    - field: illustrative_phrases
+      label: Frase ilustrativas
+      tag: quote_translation
+      length: long
+    - field: complete_search
+      label: Búsqueda exhaustiva
+      tag: complete_search
+      length: long
