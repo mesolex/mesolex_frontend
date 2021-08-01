@@ -7,12 +7,46 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 
 import find from 'lodash/find';
+import includes from 'lodash/includes';
+import isEmpty from 'lodash/isEmpty';
 import map from 'lodash/map';
 import some from 'lodash-es/some';
 
 import FilterSelector from './filter-selector';
-import { ControlledVocabField, SelectProps, FormSetters, FilterableField } from '../types';
+import { ControlledVocabField, SelectProps, ExtraField, FormSetters, FilterableField } from '../types';
 import { humanReadableFilters } from '../util';
+
+/**
+ * Certain extra fields cannot be activated if certain values
+ * are present in the form. For example, "neutralize vowel length"
+ * cannot be active if the filter is in regular expression mode.
+ *
+ * This simple function returns `true` if any of the contraints
+ * apply. Otherwise it returns `false`.
+ */
+ const applyConstraints = ({
+  filterType,
+  extraFields,
+  extraFieldKey,
+}: {
+  filterType: string;
+  extraFields: Array<ExtraField>;
+  extraFieldKey: string;
+}): boolean => {
+  const config = find(extraFields, ({ field }) => field === extraFieldKey);
+
+  if (isEmpty(config) || config === undefined) {
+    return false;
+  }
+
+  const { constraints } = config;
+
+  if (includes(constraints, 'no_regex') && filterType === 'regex') {
+    return true;
+  }
+
+  return false;
+};
 
 const OperatorSelect = React.forwardRef((props: SelectProps, ref: React.Ref<HTMLSelectElement>) => (
   <Form.Control
@@ -98,6 +132,8 @@ const QueryForm = ({
   controlledVocabFields,
   filterableFields,
   searchFields,
+  extraFields,
+  extraFieldValues,
   deleter,
 }: {
   operator: string;
@@ -109,6 +145,8 @@ const QueryForm = ({
   controlledVocabFields: Array<ControlledVocabField>;
   filterableFields: Array<FilterableField>;
   searchFields: Array<FilterableField>;
+  extraFields: Array<ExtraField>;
+  extraFieldValues: any;
   deleter: () => void;
 }) => {
   const controlledVocabFieldItems = (isControlled(typeTag, controlledVocabFields)
@@ -166,25 +204,19 @@ const QueryForm = ({
             value={filterType}
           />
 
-          {/* { map(extra, (value, key) => (
+          { extraFields.map(({ field, label }) => (
             <Dropdown.Item
-              key={key}
               as={Form.Check}
-              checked={value}
+              checked={extraFieldValues[field]}
               disabled={applyConstraints({
-                filter,
-                extraFields: props.extraFields,
-                extraFieldKey: key,
+                filterType,
+                extraFields,
+                extraFieldKey: field,
               })}
-              label={labelForExtraField(props.extraFields, key)}
-              onChange={(event): void => {
-                setExtra((prevExtra) => ({
-                  ...prevExtra,
-                  [key]: event.target.checked,
-                }));
-              }}
+              label={label}
+              onChange={(event): void => setters[field](event.target.checked)}
             />
-          ))} */}
+          ))}
         </DropdownButton>
 
         {
@@ -231,14 +263,6 @@ const QueryForm = ({
           )
         }
       </InputGroup>
-
-      {/* {<HiddenInputs
-        i={props.index}
-        filter={filter}
-        filterOn={filterOn}
-        operator={operator}
-        extra={extra}
-      />} */}
     </Form.Group>
   );
 };

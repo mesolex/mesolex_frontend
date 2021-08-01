@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useMemo, useState } from 'react';
 
 import isUndefined from 'lodash/isUndefined';
+import pick from 'lodash/pick';
 import uniqueId from 'lodash/uniqueId';
 
 import QueryForm from './query-form';
@@ -18,13 +19,16 @@ const formSetterFor = (
 
 const defaultForDataset = (dataset: Dataset): QueryFormData => {
   const [ firstFilterableField ] = dataset.filterable_fields;
-  return {
-    typeTag: firstFilterableField.tag,
-    filterType: DEFAULT_FILTER_TYPE,
-    operator: 'and',
-    value: '',
-    key: uniqueId(),
-  };
+  return Object.assign(
+    {
+      typeTag: firstFilterableField.tag,
+      filterType: DEFAULT_FILTER_TYPE,
+      operator: 'and',
+      value: '',
+      key: uniqueId(),
+    },
+    ...dataset.extra_fields.map(({ field }) => ({ [field]: false })),
+  );
 };
 
 const QueryComposer = ({ dataset }: { dataset: Dataset }) => {
@@ -34,16 +38,23 @@ const QueryComposer = ({ dataset }: { dataset: Dataset }) => {
   ]);
 
   const formSetters = useMemo(
-    () => forms.map(({ key }) => ({
-      operator: formSetterFor('operator', key, forms, setForms),
-      filterType: formSetterFor('filterType', key, forms, setForms),
-      typeTag: formSetterFor('typeTag', key, forms, setForms),
-      value: formSetterFor('value', key, forms, setForms),
-    })),
-    [forms],
+    () => forms.map(({ key }) => Object.assign(
+      {
+        operator: formSetterFor('operator', key, forms, setForms),
+        filterType: formSetterFor('filterType', key, forms, setForms),
+        typeTag: formSetterFor('typeTag', key, forms, setForms),
+        value: formSetterFor('value', key, forms, setForms),
+      },
+      ...dataset.extra_fields.map(({ field }) => ({ [field]: formSetterFor(field, key, forms, setForms) })),
+    )),
+    [dataset, forms],
   );
   const formDeleters = useMemo(
     () => forms.map(({ key }) => () => setForms(forms.filter(form => form.key !== key))),
+    [forms],
+  );
+  const formExtraFieldValues = useMemo(
+    () => forms.map(form => pick(form, dataset.extra_fields.map(({ field }) => field))),
     [forms],
   );
 
@@ -71,6 +82,8 @@ const QueryComposer = ({ dataset }: { dataset: Dataset }) => {
           filterableFields={dataset.filterable_fields}
           controlledVocabFields={controlledVocabFields}
           searchFields={searchFields}
+          extraFields={dataset.extra_fields}
+          extraFieldValues={formExtraFieldValues[i]}
         />
       ))}
     </div>
