@@ -185,12 +185,12 @@ const QueryForm = ({
             fields={filterableFields}
             onChange={(event: any): void => {
               setters.typeTag(event.target.value);
-              propagateFilterOnConditions(
-                event.target.value,
-                controlledVocabFields,
-                searchFields,
-                setters.typeTag,
-              );
+              // propagateFilterOnConditions(
+              //   event.target.value,
+              //   controlledVocabFields,
+              //   searchFields,
+              //   setters.filterType,
+              // );
             }}
             value={typeTag}
           />
