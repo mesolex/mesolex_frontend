@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { useMemo, useState } from 'react';
 
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+
 import isUndefined from 'lodash/isUndefined';
 import pick from 'lodash/pick';
 import uniqueId from 'lodash/uniqueId';
@@ -30,6 +33,27 @@ const defaultForDataset = (dataset: Dataset): QueryFormData => {
     ...dataset.extra_fields.map(({ field }) => ({ [field]: false })),
   );
 };
+
+const AddRemoveForms = ({ onAddFilter }: {
+  onAddFilter: () => void;
+}): JSX.Element => (
+  <Form.Group>
+    <Button
+      onClick={onAddFilter}
+      variant="primary"
+    >
+      Agregar filtro
+    </Button>
+
+    <Button
+      className="float-right"
+      type="submit"
+      variant="success"
+    >
+      Buscar
+    </Button>
+  </Form.Group>
+);
 
 const QueryComposer = ({ dataset }: { dataset: Dataset }) => {
   const defaultFilter = useMemo(() => defaultForDataset(dataset), [dataset]);
@@ -86,6 +110,10 @@ const QueryComposer = ({ dataset }: { dataset: Dataset }) => {
           extraFieldValues={formExtraFieldValues[i]}
         />
       ))}
+
+      <AddRemoveForms
+        onAddFilter={() => setForms(forms => [ ...forms, defaultForDataset(dataset) ])}
+      />
     </div>
   );
 };
