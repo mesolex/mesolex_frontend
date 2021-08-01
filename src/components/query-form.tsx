@@ -12,6 +12,7 @@ import some from 'lodash-es/some';
 
 import FilterSelector from './filter-selector';
 import { ControlledVocabField, SelectProps, FormSetters, FilterableField } from '../types';
+import { humanReadableFilters } from '../util';
 
 const OperatorSelect = React.forwardRef((props: SelectProps, ref: React.Ref<HTMLSelectElement>) => (
   <Form.Control
@@ -121,13 +122,13 @@ const QueryForm = ({
           as={InputGroup.Prepend}
           variant="outline-primary"
           id="filter-params"
-          title={'tbd' /*humanReadableFilters({
+          title={humanReadableFilters({
             i,
             operator,
             typeTag,
             filterType,
-            filterableFields: props.filterableFields,
-          })*/}
+            filterableFields: filterableFields,
+          })}
         >
           {
             i !== 0

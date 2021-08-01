@@ -1,22 +1,23 @@
 import fromPairs from 'lodash-es/fromPairs';
+import isUndefined from 'lodash-es/isUndefined';
 import map from 'lodash-es/map';
-import reduce from 'lodash-es/reduce';
+import negate from 'lodash-es/negate';
 
 import { FilterableField } from './types';
 
 export const humanReadableFilters = ({
   i,
   operator,
-  filterOn,
-  filter,
+  typeTag,
+  filterType,
   vln,
   nahuatOrthography,
   filterableFields,
 }: {
   i: number;
   operator: string;
-  filterOn: string;
-  filter: string;
+  typeTag: string;
+  filterType: string;
   vln?: boolean;
   nahuatOrthography?: boolean;
   filterableFields: Array<FilterableField>;
@@ -49,19 +50,15 @@ export const humanReadableFilters = ({
     map(filterableFields, ({ field, label }) => [field, label]),
   );
 
-  const modifiers: Array<string> = reduce(
-    [
-      [vln, 'NCV'],
-      [nahuatOrthography, 'flex. ort.'],
-    ],
-    (acc, [val, repr]) => (val ? acc.concat(repr) : acc),
-    [],
-  );
+  const modifiers: Array<string> = [
+    vln ? 'NCV' : undefined,
+    nahuatOrthography ? 'flex. ort.' : undefined,
+  ].filter(negate(isUndefined)) as Array<string>;
 
   const prefix = i === 0 ? initOpDict[operator] : opDict[operator];
-  const filterOnLabel = filterableFieldsDict[filterOn] || 'ítem';
-  const filterLabel = filterDict[filter];
+  const typeTagLabel = filterableFieldsDict[typeTag] || 'ítem';
+  const filterLabel = filterDict[filterType];
   const modifiersLabel = modifiers.length ? `(${modifiers.join(', ')})` : '';
 
-  return [prefix, filterOnLabel, filterLabel, modifiersLabel].join(' ');
+  return [prefix, typeTagLabel, filterLabel, modifiersLabel].join(' ');
 };
