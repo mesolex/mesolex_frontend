@@ -1,6 +1,6 @@
 import * as React from "react"
 import PropTypes from "prop-types"
-import { Link } from "gatsby"
+// import { Link } from "gatsby"
 
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';

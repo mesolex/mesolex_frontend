@@ -4,6 +4,8 @@ import { useMemo, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
+import axios from 'axios';
+
 import dropWhile from 'lodash/dropWhile';
 import isEmpty from 'lodash/isEmpty';
 import isUndefined from 'lodash/isUndefined';
@@ -95,7 +97,7 @@ const formToApiQuery = (form: QueryFormData): ApiQueryComponent => {
 };
 
 const formsToQuery = (dataset:Dataset, forms: Array<QueryFormData>): ApiQuery => {
-  const groupedForms = groupForms([], forms);
+  const groupedForms = groupForms([], forms.filter(form => form.value !== ''));
 
   return {
     dataset: dataset.code,
@@ -161,7 +163,13 @@ const QueryComposer = ({ dataset }: { dataset: Dataset }) => {
 
       <AddRemoveForms
         onAddFilter={() => setForms(forms => [ ...forms, defaultForDataset(dataset) ])}
-        onSubmit={() => console.log(formsToQuery(dataset, forms))}
+        onSubmit={async () => {
+          const response = await axios.post(
+            '/api/search/',
+            formsToQuery(dataset, forms),
+          );
+          console.log(response);
+        }}
       />
     </div>
   );

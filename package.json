@@ -6,6 +6,7 @@
   "author": "Neil Ashton <nmashton@protonmail.com>",
   "dependencies": {
     "@babel/core": "^7.12.3",
+    "axios": "^0.21.1",
     "babel-eslint": "^10.0.0",
     "bootstrap": "^4.6.0",
     "css-loader": "^6.2.0",

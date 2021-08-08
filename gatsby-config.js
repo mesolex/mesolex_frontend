@@ -5,6 +5,10 @@ module.exports = {
     author: `@nmashton`,
     siteUrl: `https://mesolex.org/`,
   },
+  proxy: {
+    prefix: '/api/search',
+    url: 'http://localhost:8000'
+  },
   plugins: [
     `gatsby-plugin-react-helmet`,
     `gatsby-plugin-image`,
