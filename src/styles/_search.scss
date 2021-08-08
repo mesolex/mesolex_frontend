@@ -1,0 +1,78 @@
+.card-header--search {
+  padding-left: 2.5rem;
+  text-indent: -1.25rem;
+}
+
+.card-header--audio {
+  padding: 0;
+  line-height: 0;
+}
+
+.lexical-entry-audio {
+  width: 100%;
+  visibility: hidden;
+}
+
+.search-results-list {
+padding-left: 1.25rem;
+}
+
+.example {
+@include media-breakpoint-up(sm) {
+  padding-left: 1.25rem;
+}
+}
+
+.card-text > p > *:not(i),
+p.notes > *:not(i,strong) {
+  font-style: italic;
+}
+
+.card-text > p > i > *,
+p.notes > i > * {
+  font-style: normal;
+}
+
+p.notes {
+  padding-left: 1.25rem;
+  text-indent: -1.25rem;
+
+  &:last-child {
+      margin-bottom: 0;
+  }
+}
+
+.search-form__filters-label {
+  cursor: pointer;
+}
+
+.search-form__select {
+  @include media-breakpoint-down(sm) {
+      flex-basis: 100% !important;
+
+      &:first-child {
+          border-bottom-left-radius: 0 !important;
+          border-bottom-right-radius: 0 !important;
+          border-top-right-radius: 0.25rem !important;
+      }
+
+      &:last-child {
+          border-top-left-radius: 0 !important;
+          border-top-right-radius: 0 !important;
+          border-bottom-left-radius: 0.25rem !important;
+      }
+
+      & + & {
+          border-top: none !important;
+          margin-left: 0 !important;
+      }
+  }
+}
+
+.search-form__filter-menu {
+  padding: 0;
+}
+
+.search-form__filter-selector {
+  border: none;
+}
