@@ -80,3 +80,8 @@ export interface ApiQuery {
   query: Array<Array<ApiQueryComponent>>
   // globalModifiers ...
 }
+
+export interface SearchResults {
+  page: number;
+  data: object;
+}

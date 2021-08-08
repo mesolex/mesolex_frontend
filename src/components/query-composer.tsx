@@ -16,7 +16,14 @@ import uniqueId from 'lodash/uniqueId';
 import QueryForm from './query-form';
 import { DEFAULT_FILTER_TYPE } from '../constants';
 
-import { Dataset, QueryFormData, ControlledVocabField, ApiQuery, ApiQueryComponent } from '../types';
+import {
+  ApiQuery,
+  ApiQueryComponent,
+  ControlledVocabField,
+  Dataset,
+  QueryFormData,
+  SearchResults,
+} from '../types';
 
 const formSetterFor = (
   k: string,
@@ -40,9 +47,11 @@ const defaultForDataset = (dataset: Dataset): QueryFormData => {
 };
 
 const AddRemoveForms = ({
+  disabled,
   onAddFilter,
   onSubmit,
 }: {
+  disabled: boolean;
   onAddFilter: () => void;
   onSubmit: () => void;
 }): JSX.Element => (
@@ -55,6 +64,7 @@ const AddRemoveForms = ({
     </Button>
 
     <Button
+      disabled={disabled}
       className="float-right"
       type="submit"
       variant="success"
@@ -106,6 +116,9 @@ const formsToQuery = (dataset:Dataset, forms: Array<QueryFormData>): ApiQuery =>
 };
 
 const QueryComposer = ({ dataset }: { dataset: Dataset }) => {
+  const [searchInProgress, setSearchInProgress] = useState(false);
+  const [results, setResults] = useState(null as SearchResults | null);
+
   const defaultFilter = useMemo(() => defaultForDataset(dataset), [dataset]);
   const [forms, setForms] = useState([
     { ...defaultFilter, key: uniqueId() } as QueryFormData,
@@ -161,13 +174,25 @@ const QueryComposer = ({ dataset }: { dataset: Dataset }) => {
         />
       ))}
 
+      {
+        results
+        ? <p>Results found!</p>
+        : null
+      }
+
       <AddRemoveForms
+        disabled={searchInProgress}
         onAddFilter={() => setForms(forms => [ ...forms, defaultForDataset(dataset) ])}
         onSubmit={async () => {
+          setSearchInProgress(true);
+
           const response = await axios.post(
             '/api/search/',
             formsToQuery(dataset, forms),
           );
+
+          setSearchInProgress(false);
+          setResults(response.data);
           console.log(response);
         }}
       />
