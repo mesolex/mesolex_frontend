@@ -4,14 +4,17 @@ import { useMemo, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
+import dropWhile from 'lodash/dropWhile';
+import isEmpty from 'lodash/isEmpty';
 import isUndefined from 'lodash/isUndefined';
 import pick from 'lodash/pick';
+import takeWhile from 'lodash/takeWhile';
 import uniqueId from 'lodash/uniqueId';
 
 import QueryForm from './query-form';
 import { DEFAULT_FILTER_TYPE } from '../constants';
 
-import { Dataset, QueryFormData, ControlledVocabField } from '../types';
+import { Dataset, QueryFormData, ControlledVocabField, ApiQuery, ApiQueryComponent } from '../types';
 
 const formSetterFor = (
   k: string,
@@ -34,8 +37,12 @@ const defaultForDataset = (dataset: Dataset): QueryFormData => {
   );
 };
 
-const AddRemoveForms = ({ onAddFilter }: {
+const AddRemoveForms = ({
+  onAddFilter,
+  onSubmit,
+}: {
   onAddFilter: () => void;
+  onSubmit: () => void;
 }): JSX.Element => (
   <Form.Group>
     <Button
@@ -49,11 +56,52 @@ const AddRemoveForms = ({ onAddFilter }: {
       className="float-right"
       type="submit"
       variant="success"
+      onClick={onSubmit}
     >
       Buscar
     </Button>
   </Form.Group>
 );
+
+const groupForms = (acc: Array<Array<QueryFormData>>, forms: Array<QueryFormData>): Array<Array<QueryFormData>> => {
+  if (isEmpty(forms)) {
+    return acc;
+  }
+
+  const [head, ...tail] = forms;
+  const nextConjunctGroup = takeWhile(tail, (form: QueryFormData) => form.operator === 'and' || form.operator === 'and_n');
+  const nextRest = dropWhile(tail, (form: QueryFormData) => form.operator === 'and' || form.operator === 'and_n');
+
+  return groupForms(
+    [ ...acc, [ head, ...nextConjunctGroup ]],
+    nextRest,
+  );
+};
+
+const formToApiQuery = (form: QueryFormData): ApiQueryComponent => {
+  const {
+    typeTag,
+    filterType,
+    operator,
+    value,
+  } = form;
+
+  return {
+    type_tag: typeTag,
+    filter_type: filterType,
+    value,
+    exclude: operator === 'and_n' || operator === 'or_n',
+  };
+};
+
+const formsToQuery = (dataset:Dataset, forms: Array<QueryFormData>): ApiQuery => {
+  const groupedForms = groupForms([], forms);
+
+  return {
+    dataset: dataset.code,
+    query: groupedForms.map(group => group.map(formToApiQuery)),
+  };
+};
 
 const QueryComposer = ({ dataset }: { dataset: Dataset }) => {
   const defaultFilter = useMemo(() => defaultForDataset(dataset), [dataset]);
@@ -113,6 +161,7 @@ const QueryComposer = ({ dataset }: { dataset: Dataset }) => {
 
       <AddRemoveForms
         onAddFilter={() => setForms(forms => [ ...forms, defaultForDataset(dataset) ])}
+        onSubmit={() => console.log(formsToQuery(dataset, forms))}
       />
     </div>
   );

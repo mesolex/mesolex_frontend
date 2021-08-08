@@ -61,3 +61,22 @@ export interface FormSetters {
   operator: (newValue: string) => void;
   value: (newValue: string) => void;
 }
+
+// interface Modifier {
+//   name: string;
+// }
+export interface ApiQueryComponent {
+  type_tag: string;
+  filter_type: string;
+  value: string;
+  exclude: boolean;
+  // modifiers: Array<Modifier>;
+}
+
+export interface ApiQuery {
+  pageSize?: number;
+  page?: number;
+  dataset: string;
+  query: Array<Array<ApiQueryComponent>>
+  // globalModifiers ...
+}
