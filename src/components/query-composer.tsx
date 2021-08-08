@@ -14,6 +14,7 @@ import takeWhile from 'lodash/takeWhile';
 import uniqueId from 'lodash/uniqueId';
 
 import QueryForm from './query-form';
+import Results from './results';
 import { DEFAULT_FILTER_TYPE } from '../constants';
 
 import {
@@ -176,7 +177,13 @@ const QueryComposer = ({ dataset }: { dataset: Dataset }) => {
 
       {
         results
-        ? <p>Results found!</p>
+        ? (
+          <Results
+            dataset={dataset.code}
+            page={results.page}
+            data={results.data}
+          />
+        )
         : null
       }
 

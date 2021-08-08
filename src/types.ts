@@ -83,5 +83,5 @@ export interface ApiQuery {
 
 export interface SearchResults {
   page: number;
-  data: object;
+  data: Array<object>;
 }
