@@ -175,18 +175,6 @@ const QueryComposer = ({ dataset }: { dataset: Dataset }) => {
         />
       ))}
 
-      {
-        results
-        ? (
-          <Results
-            dataset={dataset.code}
-            page={results.page}
-            data={results.data}
-          />
-        )
-        : null
-      }
-
       <AddRemoveForms
         disabled={searchInProgress}
         onAddFilter={() => setForms(forms => [ ...forms, defaultForDataset(dataset) ])}
@@ -203,6 +191,18 @@ const QueryComposer = ({ dataset }: { dataset: Dataset }) => {
           console.log(response);
         }}
       />
+
+      {
+        results
+        ? (
+          <Results
+            dataset={dataset.code}
+            page={results.page}
+            data={results.data}
+          />
+        )
+        : null
+      }
     </div>
   );
 };
