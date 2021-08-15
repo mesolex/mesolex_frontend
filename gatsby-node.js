@@ -8,7 +8,7 @@ exports.createPages = ({ actions }) => {
   datasets.forEach((dataset) => {
     createPage({
       path: `/${dataset.code}`,
-      component: require.resolve('./src/pages/search.jsx'),
+      component: require.resolve('./src/dynamic-pages/search.jsx'),
       context: {
         dataset,
       },
