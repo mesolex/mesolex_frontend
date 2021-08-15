@@ -205,7 +205,7 @@ const QueryComposer = ({ dataset }: { dataset: Dataset }) => {
         setSearchInProgress(true);
   
         const response = await axios.post(
-          '/api/search/',
+          `${process.env.GATSBY_API_HOST}/api/search/`,
           data,
         );
   
