@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import isEmpty from 'lodash/isEmpty';
 
-import Card from 'react-bootstrap/card';
+import Card from 'react-bootstrap/Card';
 
 const safe = (text: string) => (
   <span dangerouslySetInnerHTML={{__html: text}} />
