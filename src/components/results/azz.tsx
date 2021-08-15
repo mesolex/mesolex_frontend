@@ -75,40 +75,45 @@ const Azz = ({
         }
       </Card.Header>
 
-      <Card.Body>
-        <ol className="search-results-list">
-          {
-            item.senses.map((sense) => (
-              <li>
-                <Card.Text>
-                  <p>
-                    {safe(sense.sense)}
-                    {
-                      !isEmpty(sense.ostentives)
-                      && <>
-                        &nbsp;({safe(sense.ostentives.join(' '))})
-                      </>
-                    }
-                  </p>
-                </Card.Text>
-                {
-                  sense.examples.map((example) => (
-                    <blockquote className="card-text example font-weight-light">
+      {
+        !isEmpty(item.senses)
+        && (
+          <Card.Body>
+            <ol className="search-results-list">
+              {
+                item.senses.map((sense) => (
+                  <li>
+                    <Card.Text>
                       <p>
-                        {safe(example.original.text)}
+                        {safe(sense.sense)}
                         {
-                          !isEmpty(example.translation)
-                          && <>&nbsp;<i>{safe(example.translation.text)}</i></>
+                          !isEmpty(sense.ostentives)
+                          && <>
+                            &nbsp;({safe(sense.ostentives.join(' '))})
+                          </>
                         }
                       </p>
-                    </blockquote>
-                  ))
-                }
-              </li>
-            ))
-          }
-        </ol>
-      </Card.Body>
+                    </Card.Text>
+                    {
+                      sense.examples.map((example) => (
+                        <blockquote className="card-text example font-weight-light">
+                          <p>
+                            {safe(example.original.text)}
+                            {
+                              !isEmpty(example.translation)
+                              && <>&nbsp;<i>{safe(example.translation.text)}</i></>
+                            }
+                          </p>
+                        </blockquote>
+                      ))
+                    }
+                  </li>
+                ))
+              }
+            </ol>
+          </Card.Body>
+        )
+      }
 
       {
         !isEmpty(item.notes)
