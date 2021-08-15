@@ -70,6 +70,7 @@ const Azz = ({
           </>
         }
       </Card.Header>
+
       <Card.Body>
         <ol className="search-results-list">
           {
@@ -104,6 +105,26 @@ const Azz = ({
           }
         </ol>
       </Card.Body>
+
+      {
+        !isEmpty(item.notes)
+        && (
+          <Card.Footer>
+            {
+              item.notes.map((note) => {
+                switch (note.note_type) {
+                  case 'semantics':
+                    return <><strong>Notas semánticas: </strong>{ note.text }</>
+                  case 'morphology':
+                    return <><strong>Notas morfológicas: </strong>{ note.text }</>
+                  case 'note':
+                    return <><strong>Notas gramaticales: </strong>{ note.text }</>
+                }
+              })
+            }
+          </Card.Footer>
+        )
+      }
     </Card>
   );
 };
