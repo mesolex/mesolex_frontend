@@ -135,6 +135,7 @@ const QueryForm = ({
   extraFields,
   extraFieldValues,
   deleter,
+  onSubmit,
 }: {
   operator: string;
   filterType: string;
@@ -148,122 +149,131 @@ const QueryForm = ({
   extraFields: Array<ExtraField>;
   extraFieldValues: any;
   deleter: () => void;
+  onSubmit: () => Promise<void>;
 }) => {
   const controlledVocabFieldItems = (isControlled(typeTag, controlledVocabFields)
     ? (find(controlledVocabFields, ({ field }) => field === typeTag) as ControlledVocabField).items
     : []);
 
   return (
-    <Form.Group>
-      <InputGroup>
-        <DropdownButton
-          as={InputGroup.Prepend}
-          variant="outline-primary"
-          id="filter-params"
-          title={humanReadableFilters({
-            i,
-            operator,
-            typeTag,
-            filterType,
-            filterableFields: filterableFields,
-          })}
-        >
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit();
+      }}
+    >
+      <Form.Group>
+        <InputGroup>
+          <DropdownButton
+            as={InputGroup.Prepend}
+            variant="outline-primary"
+            id="filter-params"
+            title={humanReadableFilters({
+              i,
+              operator,
+              typeTag,
+              filterType,
+              filterableFields: filterableFields,
+            })}
+          >
+            {
+              i !== 0
+                ? (
+                  <Dropdown.Item
+                    as={OperatorSelect}
+                    onChange={(event: any): void => setters.operator(event.target.value)}
+                    value={operator}
+                  />
+                )
+                : null
+            }
+
+            <Dropdown.Item
+              as={FieldSelect}
+              fields={filterableFields}
+              onChange={(event: any): void => {
+                setters.typeTag(event.target.value);
+                // propagateFilterOnConditions(
+                //   event.target.value,
+                //   controlledVocabFields,
+                //   searchFields,
+                //   setters.filterType,
+                // );
+              }}
+              value={typeTag}
+            />
+
+            {/* TODO: add control and search determination */}
+            <Dropdown.Item
+              as={FilterSelector}
+              controlled={isControlled(typeTag, controlledVocabFields)}
+              onChange={(event: any): void => setters.filterType(event.target.value)}
+              textSearch={isTextSearch(typeTag, searchFields)}
+              value={filterType}
+            />
+
+            { extraFields.map(({ field, label }) => (
+              <Dropdown.Item
+                as={Form.Check}
+                checked={extraFieldValues[field]}
+                disabled={applyConstraints({
+                  filterType,
+                  extraFields,
+                  extraFieldKey: field,
+                })}
+                label={label}
+                key={label}
+                onChange={(event): void => setters[field](event.target.checked)}
+              />
+            ))}
+          </DropdownButton>
+
           {
-            i !== 0
+            isControlled(typeTag, controlledVocabFields)
               ? (
-                <Dropdown.Item
-                  as={OperatorSelect}
-                  onChange={(event: any): void => setters.operator(event.target.value)}
-                  value={operator}
+                <Form.Control
+                  as="select"
+                  custom
+                  name={`form-${i}-query_string`}
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>): void => setters.value(event.target.value)}
+                  value={some(controlledVocabFieldItems, ({ value: v }) => v === value)
+                    ? value
+                    : controlledVocabFieldItems[0].value}
+                >
+                  {map(
+                    controlledVocabFieldItems,
+                    ({ label, value }) => (
+                      <option key={label} value={value}>{ label }</option>
+                    ),
+                  )}
+                </Form.Control>
+              )
+              : (
+                <Form.Control
+                  placeholder={'Ingrese la consulta aquí'}
+                  name={`form-${i}-query_string`}
+                  onChange={(event): void => setters.value(event.target.value)}
+                  type="text"
+                  value={value}
                 />
               )
-              : null
           }
 
-          <Dropdown.Item
-            as={FieldSelect}
-            fields={filterableFields}
-            onChange={(event: any): void => {
-              setters.typeTag(event.target.value);
-              // propagateFilterOnConditions(
-              //   event.target.value,
-              //   controlledVocabFields,
-              //   searchFields,
-              //   setters.filterType,
-              // );
-            }}
-            value={typeTag}
-          />
-
-          {/* TODO: add control and search determination */}
-          <Dropdown.Item
-            as={FilterSelector}
-            controlled={isControlled(typeTag, controlledVocabFields)}
-            onChange={(event: any): void => setters.filterType(event.target.value)}
-            textSearch={isTextSearch(typeTag, searchFields)}
-            value={filterType}
-          />
-
-          { extraFields.map(({ field, label }) => (
-            <Dropdown.Item
-              as={Form.Check}
-              checked={extraFieldValues[field]}
-              disabled={applyConstraints({
-                filterType,
-                extraFields,
-                extraFieldKey: field,
-              })}
-              label={label}
-              onChange={(event): void => setters[field](event.target.checked)}
-            />
-          ))}
-        </DropdownButton>
-
-        {
-          isControlled(typeTag, controlledVocabFields)
-            ? (
-              <Form.Control
-                as="select"
-                custom
-                name={`form-${i}-query_string`}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>): void => setters.value(event.target.value)}
-                value={some(controlledVocabFieldItems, ({ value: v }) => v === value)
-                  ? value
-                  : controlledVocabFieldItems[0].value}
-              >
-                {map(
-                  controlledVocabFieldItems,
-                  ({ label, value }) => (
-                    <option key={label} value={value}>{ label }</option>
-                  ),
-                )}
-              </Form.Control>
+          {
+            i !== 0 && (
+              <InputGroup.Append>
+                <Button
+                  onClick={deleter}
+                  variant="outline-secondary"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </Button>
+              </InputGroup.Append>
             )
-            : (
-              <Form.Control
-                placeholder={'Ingrese la consulta aquí'}
-                name={`form-${i}-query_string`}
-                onChange={(event): void => setters.value(event.target.value)}
-                type="text"
-                value={value}
-              />
-            )
-        }
-
-        {
-          i !== 0 && (
-            <InputGroup.Append>
-              <Button
-                onClick={deleter}
-                variant="outline-secondary"
-              >
-                <span aria-hidden="true">&times;</span>
-              </Button>
-            </InputGroup.Append>
-          )
-        }
-      </InputGroup>
-    </Form.Group>
+          }
+        </InputGroup>
+      </Form.Group>
+    </form>
   );
 };
 

@@ -54,7 +54,7 @@ const AddRemoveForms = ({
 }: {
   disabled: boolean;
   onAddFilter: () => void;
-  onSubmit: () => void;
+  onSubmit: () => Promise<void>;
 }): JSX.Element => (
   <Form.Group>
     <Button
@@ -156,6 +156,23 @@ const QueryComposer = ({ dataset }: { dataset: Dataset }) => {
     [dataset],
   );
 
+  const onSubmit = useMemo(
+    () => {
+      return async () => {
+        setSearchInProgress(true);
+  
+        const response = await axios.post(
+          '/api/search/',
+          formsToQuery(dataset, forms),
+        );
+  
+        setSearchInProgress(false);
+        setResults(response.data);
+      };
+    },
+    [dataset, forms],
+  );
+
   return (
     <div>
       {forms.map((form, i) => (
@@ -165,6 +182,7 @@ const QueryComposer = ({ dataset }: { dataset: Dataset }) => {
           typeTag={form.typeTag}
           value={form.value}
           i={i}
+          key={form.key}
           setters={formSetters[i]}
           deleter={formDeleters[i]}
           filterableFields={dataset.filterable_fields}
@@ -172,24 +190,14 @@ const QueryComposer = ({ dataset }: { dataset: Dataset }) => {
           searchFields={searchFields}
           extraFields={dataset.extra_fields}
           extraFieldValues={formExtraFieldValues[i]}
+          onSubmit={onSubmit}
         />
       ))}
 
       <AddRemoveForms
         disabled={searchInProgress}
         onAddFilter={() => setForms(forms => [ ...forms, defaultForDataset(dataset) ])}
-        onSubmit={async () => {
-          setSearchInProgress(true);
-
-          const response = await axios.post(
-            '/api/search/',
-            formsToQuery(dataset, forms),
-          );
-
-          setSearchInProgress(false);
-          setResults(response.data);
-          console.log(response);
-        }}
+        onSubmit={onSubmit}
       />
 
       {
