@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useMemo, useState } from 'react';
 
 import Button from 'react-bootstrap/Button';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Form from 'react-bootstrap/Form';
 
 import axios from 'axios';
@@ -75,6 +76,48 @@ const AddRemoveForms = ({
     </Button>
   </Form.Group>
 );
+
+const Pagination = ({
+  page,
+  pageSize,
+  total,
+  nextPage,
+  prevPage,
+}: {
+  page: number;
+  pageSize: number;
+  total: number;
+  nextPage: () => void;
+  prevPage: () => void;
+}) => {
+  const hasPrev = page > 1;
+  const totalPages = Math.ceil(total / pageSize);
+  const hasNext = totalPages > page;
+
+  return (
+    <>
+      <div className="h5 mt-4 mb-3">
+        { total } resultados (página { page } de { totalPages })
+      </div>
+      <ButtonGroup
+        className="my-2"
+      >
+        <Button
+          disabled={!hasPrev}
+          onClick={prevPage}
+        >
+          Anterior
+        </Button>
+        <Button
+          disabled={!hasNext}
+          onClick={nextPage}
+        >
+          Siguiente
+        </Button>
+      </ButtonGroup>
+    </>
+  );
+};
 
 const groupForms = (acc: Array<Array<QueryFormData>>, forms: Array<QueryFormData>): Array<Array<QueryFormData>> => {
   if (isEmpty(forms)) {
@@ -156,22 +199,50 @@ const QueryComposer = ({ dataset }: { dataset: Dataset }) => {
     [dataset],
   );
 
-  const onSubmit = useMemo(
+  const searchForData = useMemo(
     () => {
-      return async () => {
+      return async (data: any) => {
         setSearchInProgress(true);
   
         const response = await axios.post(
           '/api/search/',
-          formsToQuery(dataset, forms),
+          data,
         );
   
         setSearchInProgress(false);
         setResults(response.data);
       };
     },
-    [dataset, forms],
+    [],
   );
+
+  const onSubmit = () => searchForData(formsToQuery(dataset, forms));
+
+  const nextPage = () => {
+    if (!results) {
+      return;
+    }
+
+    const data = {
+      ...formsToQuery(dataset, forms),
+      page: results.page + 1,
+    };
+
+    searchForData(data);
+  };
+
+  const prevPage = () => {
+    if (!results) {
+      return;
+    }
+
+    const data = {
+      ...formsToQuery(dataset, forms),
+      page: results.page - 1,
+    };
+
+    searchForData(data);
+  };
 
   return (
     <div>
@@ -202,14 +273,22 @@ const QueryComposer = ({ dataset }: { dataset: Dataset }) => {
 
       {
         results
-        ? (
-          <Results
-            dataset={dataset.code}
-            page={results.page}
-            data={results.data}
-          />
+        && (
+          <>
+            <Pagination
+              page={results.page}
+              pageSize={results.pageSize}
+              total={results.total}
+              nextPage={nextPage}
+              prevPage={prevPage}
+            />
+            <Results
+              dataset={dataset.code}
+              page={results.page}
+              data={results.data}
+            />
+          </>
         )
-        : null
       }
     </div>
   );

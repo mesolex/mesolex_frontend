@@ -15,8 +15,6 @@ const SearchPage = ({ pageContext }) => {
       <h1>{dataset.label}</h1>
  
       <QueryComposer dataset={dataset} />
- 
-      <Link to="/">Go back to the homepage</Link>
     </Layout>
   );
 };

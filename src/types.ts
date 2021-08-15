@@ -84,4 +84,6 @@ export interface ApiQuery {
 export interface SearchResults {
   page: number;
   data: Array<object>;
+  total: number;
+  pageSize: number;
 }
