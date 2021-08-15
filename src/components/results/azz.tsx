@@ -4,6 +4,10 @@ import isEmpty from 'lodash/isEmpty';
 
 import Card from 'react-bootstrap/card';
 
+const safe = (text: string) => (
+  <span dangerouslySetInnerHTML={{__html: text}} />
+);
+
 const Azz = ({
   item,
 }: {
@@ -21,7 +25,7 @@ const Azz = ({
           && <>
             &nbsp;|&nbsp;
             <i>Citación: </i>
-            {item.citation_forms.join(', ')}
+            {safe(item.citation_forms.join(', '))}
             {!isEmpty(item.variant_forms) && '; '}
           </>
         }
@@ -29,7 +33,7 @@ const Azz = ({
           !isEmpty(item.variant_forms)
           && <>
             <i>Formas alt.: </i>
-            {item.variant_forms.join(', ')}
+            {safe(item.variant_forms.join(', '))}
             {!isEmpty(item.glosses) && '; '}
           </>
         }
@@ -37,7 +41,7 @@ const Azz = ({
           !isEmpty(item.glosses)
           && <>
             <i>Glosa: </i>
-            {item.glosses.join(', ')}
+            {safe(item.glosses.join(', '))}
           </>
         }
 
@@ -47,7 +51,7 @@ const Azz = ({
           && <>
             &nbsp;|&nbsp;
             <i>Categoría gramatical: </i>
-            {item.grammar_groups.map(({ part_of_speech }) => part_of_speech).join(', ')}
+            {safe(item.grammar_groups.map(({ part_of_speech }) => part_of_speech).join(', '))}
           </>
         }
 
@@ -56,7 +60,7 @@ const Azz = ({
           && <>
             &nbsp;|&nbsp;
             <i>Campo semántico: </i>
-            {item.categories.join(', ')}
+            {safe(item.categories.join(', '))}
           </>
         }
 
@@ -66,7 +70,7 @@ const Azz = ({
           && <>
             &nbsp;|&nbsp;
             <i>Palabras con elementos no de náhuat: </i>
-            {item.non_native_etymologies.map(({ value }) => value).join(', ')}
+            {safe(item.non_native_etymologies.map(({ value }) => value).join(', '))}
           </>
         }
       </Card.Header>
@@ -78,11 +82,11 @@ const Azz = ({
               <li>
                 <Card.Text>
                   <p>
-                    {sense.sense}
+                    {safe(sense.sense)}
                     {
                       !isEmpty(sense.ostentives)
                       && <>
-                        &nbsp;({sense.ostentives.join(' ')})
+                        &nbsp;({safe(sense.ostentives.join(' '))})
                       </>
                     }
                   </p>
@@ -91,10 +95,10 @@ const Azz = ({
                   sense.examples.map((example) => (
                     <blockquote className="card-text example font-weight-light">
                       <p>
-                        {example.original.text}
+                        {safe(example.original.text)}
                         {
                           !isEmpty(example.translation)
-                          && <>&nbsp;<i>{example.translation.text}</i></>
+                          && <>&nbsp;<i>{safe(example.translation.text)}</i></>
                         }
                       </p>
                     </blockquote>
@@ -114,11 +118,11 @@ const Azz = ({
               item.notes.map((note) => {
                 switch (note.note_type) {
                   case 'semantics':
-                    return <><strong>Notas semánticas: </strong>{ note.text }</>
+                    return <><strong>Notas semánticas: </strong>{ safe(note.text) }</>
                   case 'morphology':
-                    return <><strong>Notas morfológicas: </strong>{ note.text }</>
+                    return <><strong>Notas morfológicas: </strong>{ safe(note.text) }</>
                   case 'note':
-                    return <><strong>Notas gramaticales: </strong>{ note.text }</>
+                    return <><strong>Notas gramaticales: </strong>{ safe(note.text) }</>
                 }
               })
             }
