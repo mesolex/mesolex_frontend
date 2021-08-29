@@ -27,12 +27,45 @@ import {
   SearchResults,
 } from '../types';
 
+/**
+ * Returns a derived setter for an individual form within the state.
+ *
+ * @param key - The key of the form to be updated
+ * @param forms - Array of forms from state
+ * @param setForms - Form state setter
+ */
+const setFormFor = (
+  key: string,
+  forms: Array<QueryFormData>,
+  setForms: React.Dispatch<React.SetStateAction<Array<QueryFormData>>>,
+) => (newForm: object) =>
+setForms(forms.map(form =>
+  form.key === key ? {
+    ...form,
+    ...newForm,
+  } : form))
+
+/**
+ * Convenience function for a one-field derived setter for a particular
+ * form within the state. Used to update individual fields, e.g. to
+ * set the search value to "foo".
+ * 
+ * @param k - The keyword of the parameter to be updated in the form
+ * @param key - The key of the form to be updated
+ * @param forms - Array of forms from state
+ * @param setForms - Form state setter
+ * @returns 
+ */
 const formSetterFor = (
   k: string,
   key: string,
   forms: Array<QueryFormData>,
   setForms: React.Dispatch<React.SetStateAction<Array<QueryFormData>>>,
-) => (newValue: string) => setForms(forms.map(form => form.key === key ? { ...form, [k]: newValue } : form))
+) => {
+  const setForm = setFormFor(key, forms, setForms);
+  return (newValue: string) =>
+    setForm({ [k]: newValue });
+}
 
 const defaultForDataset = (dataset: Dataset): QueryFormData => {
   const [ firstFilterableField ] = dataset.filterable_fields;
@@ -175,6 +208,7 @@ const QueryComposer = ({ dataset }: { dataset: Dataset }) => {
         filterType: formSetterFor('filterType', key, forms, setForms),
         typeTag: formSetterFor('typeTag', key, forms, setForms),
         value: formSetterFor('value', key, forms, setForms),
+        form: setFormFor(key, forms, setForms),
       },
       ...dataset.extra_fields.map(({ field }) => ({ [field]: formSetterFor(field, key, forms, setForms) })),
     )),

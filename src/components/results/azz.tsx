@@ -27,6 +27,7 @@ const Azz = ({
             <i>Citación: </i>
             {safe(item.citation_forms.join(', '))}
             {!isEmpty(item.variant_forms) && '; '}
+            {!(isEmpty(item.glosses) && isEmpty(item.variant_forms)) && ', '}
           </>
         }
         {

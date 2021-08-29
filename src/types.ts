@@ -60,6 +60,7 @@ export interface FormSetters {
   filterType: (newValue: string) => void;
   operator: (newValue: string) => void;
   value: (newValue: string) => void;
+  form: (newForm: any) => void;
 }
 
 // interface Modifier {

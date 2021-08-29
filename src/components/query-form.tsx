@@ -106,19 +106,20 @@ const isTextSearch = (
  * field, the "filter" value can only be "is exactly"; if it has
  * become a text search field, it can only be "matches"; etc.
  */
- const propagateFilterOnConditions = (
+ const propagatedFilterConditions = (
   filterOn: string,
   controlledVocabFields: Array<ControlledVocabField>,
   searchFields: Array<FilterableField>,
-  setFilter: (newValue: string) => void,
-): void => {
+): object => {
   if (isControlled(filterOn, controlledVocabFields)) {
-    setFilter('exactly_equals');
+    return { filterType: 'exactly_equals' };
   }
 
   if (isTextSearch(filterOn, searchFields)) {
-    setFilter('text_search');
+    return { filterType: 'text_search' };
   }
+
+  return {};
 };
 
 
@@ -192,13 +193,14 @@ const QueryForm = ({
               as={FieldSelect}
               fields={filterableFields}
               onChange={(event: any): void => {
-                setters.typeTag(event.target.value);
-                // propagateFilterOnConditions(
-                //   event.target.value,
-                //   controlledVocabFields,
-                //   searchFields,
-                //   setters.filterType,
-                // );
+                setters.form({
+                  typeTag: event.target.value,
+                  ...propagatedFilterConditions(
+                    event.target.value,
+                    controlledVocabFields,
+                    searchFields,
+                  ),
+                });
               }}
               value={typeTag}
             />
