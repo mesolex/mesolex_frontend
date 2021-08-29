@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import isEmpty from 'lodash/isEmpty';
 
+import AudioPlayer, { RHAP_UI } from 'react-h5-audio-player';
 import Card from 'react-bootstrap/Card';
 
 const safe = (text: string) => (
@@ -26,10 +27,14 @@ const Azz = ({
             /**
              * TODO: replace this with a properly styled element
              */
-            <audio
+            <AudioPlayer
               key={`media_${i}`}
               src={url}
-              controls
+              showJumpControls={false}
+              showDownloadProgress={false}
+              showFilledProgress={false}
+              customControlsSection={[RHAP_UI.MAIN_CONTROLS]}
+              customProgressBarSection={[]}
               style={{
                 display: 'inline-block',
                 margin: '0 1em',

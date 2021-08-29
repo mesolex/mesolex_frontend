@@ -1,0 +1,41 @@
+$rhap_theme-color: #868686 !default;
+$rhap_background-color: transparent;
+$rhap_bar-color: #e4e4e4 !default;
+$rhap_time-color: #333 !default;
+$rhap_font-family: inherit !default;
+
+@import 'react-h5-audio-player/src/styles.scss';
+
+$button_size: 24px;
+
+.rhap_container {
+  display: inline-flex;
+  width: auto;
+  padding: 0;
+  margin: 0px 0.25em 0 0.5em !important;
+  box-shadow: none;
+}
+
+.rhap_main {
+  display: inline-flex;
+}
+
+.rhap_progress-section {
+  display: none;
+}
+
+.rhap_controls-section {
+  display: inline-flex;
+  position: relative;
+  top: 0.25em;
+}
+
+.rhap_stacked .rhap_controls-section {
+  margin-top: 0;
+}
+
+.rhap_play-pause-button {
+  width: $button_size;
+  height: $button_size;
+  font-size: $button_size;
+}
