@@ -21,6 +21,24 @@ const Azz = ({
         </span>
 
         {
+          !isEmpty(item.media)
+          && item.media.map(({ url }: { url: string }, i: number) => (
+            /**
+             * TODO: replace this with a properly styled element
+             */
+            <audio
+              key={`media_${i}`}
+              src={url}
+              controls
+              style={{
+                display: 'inline-block',
+                margin: '0 1em',
+              }}
+            />
+          ))
+        }
+
+        {
           !isEmpty(item.citation_forms)
           && <>
             &nbsp;|&nbsp;
