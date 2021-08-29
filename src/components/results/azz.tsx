@@ -142,11 +142,11 @@ const Azz = ({
               item.notes.map((note) => {
                 switch (note.note_type) {
                   case 'semantics':
-                    return <><strong>Notas semánticas: </strong>{ safe(note.text) }</>
+                    return <div><strong>Notas semánticas: </strong>{ safe(note.text) }</div>
                   case 'morphology':
-                    return <><strong>Notas morfológicas: </strong>{ safe(note.text) }</>
+                    return <div><strong>Notas morfológicas: </strong>{ safe(note.text) }</div>
                   case 'note':
-                    return <><strong>Notas gramaticales: </strong>{ safe(note.text) }</>
+                    return <div><strong>Notas gramaticales: </strong>{ safe(note.text) }</div>
                 }
               })
             }
