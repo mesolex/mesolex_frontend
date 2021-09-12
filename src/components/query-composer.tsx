@@ -25,6 +25,7 @@ import {
   Dataset,
   QueryFormData,
   SearchResults,
+  Modifier,
 } from '../types';
 
 /**
@@ -167,7 +168,7 @@ const groupForms = (acc: Array<Array<QueryFormData>>, forms: Array<QueryFormData
   );
 };
 
-const formToApiQuery = (form: QueryFormData): ApiQueryComponent => {
+const formToApiQuery = (dataset: Dataset) => (form: QueryFormData): ApiQueryComponent => {
   const {
     typeTag,
     filterType,
@@ -175,21 +176,26 @@ const formToApiQuery = (form: QueryFormData): ApiQueryComponent => {
     value,
   } = form;
 
+  const modifiers = dataset.extra_fields
+    .filter(({ field }) => form[field])
+    .map(({ field }) => ({ name: field }));
+
   return {
     type_tag: typeTag,
     filter_type: filterType,
     value,
     exclude: operator === 'and_n' || operator === 'or_n',
+    modifiers,
   };
 };
 
-const formsToQuery = (dataset:Dataset, forms: Array<QueryFormData>): ApiQuery => {
+const formsToQuery = (dataset: Dataset, forms: Array<QueryFormData>): ApiQuery => {
   const groupedForms = groupForms([], forms.filter(form => form.value !== ''));
 
   return {
     dataset: dataset.code,
-    query: groupedForms.map(group => group.map(formToApiQuery)),
-  };
+    query: groupedForms.map(group => group.map(formToApiQuery(dataset))),
+  }; 
 };
 
 const QueryComposer = ({ dataset }: { dataset: Dataset }) => {

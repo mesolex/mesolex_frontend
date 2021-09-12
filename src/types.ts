@@ -35,6 +35,7 @@ export interface QueryFormData {
   operator: string;
   value: string;
   key: string;
+  [modifier_key: string]: string | boolean;
 }
 
 export interface SelectProps {
@@ -63,15 +64,15 @@ export interface FormSetters {
   form: (newForm: any) => void;
 }
 
-// interface Modifier {
-//   name: string;
-// }
+export interface Modifier {
+  name: string;
+}
 export interface ApiQueryComponent {
   type_tag: string;
   filter_type: string;
   value: string;
   exclude: boolean;
-  // modifiers: Array<Modifier>;
+  modifiers: Array<Modifier>;
 }
 
 export interface ApiQuery {
