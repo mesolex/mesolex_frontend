@@ -79,8 +79,8 @@ export interface ApiQuery {
   pageSize?: number;
   page?: number;
   dataset: string;
-  query: Array<Array<ApiQueryComponent>>
-  // globalModifiers ...
+  query: Array<Array<ApiQueryComponent>>;
+  global_modifiers: Array<Modifier>;
 }
 
 export interface SearchResults {

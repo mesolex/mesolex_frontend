@@ -8,10 +8,12 @@ import Form from 'react-bootstrap/Form';
 import axios from 'axios';
 
 import dropWhile from 'lodash/dropWhile';
+import fromPairs from 'lodash/fromPairs';
 import isEmpty from 'lodash/isEmpty';
 import isUndefined from 'lodash/isUndefined';
 import pick from 'lodash/pick';
 import takeWhile from 'lodash/takeWhile';
+import toPairs from 'lodash/toPairs';
 import uniqueId from 'lodash/uniqueId';
 
 import QueryForm from './query-form';
@@ -25,7 +27,7 @@ import {
   Dataset,
   QueryFormData,
   SearchResults,
-  Modifier,
+  GlobalFilter,
 } from '../types';
 
 /**
@@ -153,6 +155,29 @@ const Pagination = ({
   );
 };
 
+const GlobalFilters = (props: {
+  globalFiltersDataset: Array<GlobalFilter>;
+  globalFilters: { [fieldName: string]: boolean };
+  setGlobalFilters: React.Dispatch<React.SetStateAction<{ [fieldName: string]: boolean}>>;
+}): JSX.Element => (
+  <Form.Group>
+    { props.globalFiltersDataset.map(({ field, label }, i) => (
+      <Form.Check
+        key={i}
+        checked={props.globalFilters[field]}
+        label={label}
+        name={field}
+        onChange={(event): void => {
+          props.setGlobalFilters((prevGlobalFilters) => ({
+            ...prevGlobalFilters,
+            [field]: event.target.checked,
+          }));
+        }}
+      />
+    )) }
+  </Form.Group>
+);
+
 const groupForms = (acc: Array<Array<QueryFormData>>, forms: Array<QueryFormData>): Array<Array<QueryFormData>> => {
   if (isEmpty(forms)) {
     return acc;
@@ -189,12 +214,22 @@ const formToApiQuery = (dataset: Dataset) => (form: QueryFormData): ApiQueryComp
   };
 };
 
-const formsToQuery = (dataset: Dataset, forms: Array<QueryFormData>): ApiQuery => {
+const formsToQuery = (
+  dataset: Dataset,
+  forms: Array<QueryFormData>,
+  globalFilters: { [fieldName: string]: boolean },
+): ApiQuery => {
   const groupedForms = groupForms([], forms.filter(form => form.value !== ''));
+
+  // const globalModifiers = keys(globalFilters).map(key => ({ name: key }));
+  const globalModifiers = toPairs(globalFilters)
+    .filter(([ k, v ]) => v)
+    .map(([ k, v]) => ({ name: k}));
 
   return {
     dataset: dataset.code,
     query: groupedForms.map(group => group.map(formToApiQuery(dataset))),
+    global_modifiers: globalModifiers,
   }; 
 };
 
@@ -206,6 +241,9 @@ const QueryComposer = ({ dataset }: { dataset: Dataset }) => {
   const [forms, setForms] = useState([
     { ...defaultFilter, key: uniqueId() } as QueryFormData,
   ]);
+  const [globalFilters, setGlobalFilters] = useState(
+    fromPairs(dataset.global_filters.map(({ field, label }) => [field, false])),
+  );
 
   const formSetters = useMemo(
     () => forms.map(({ key }) => Object.assign(
@@ -256,7 +294,7 @@ const QueryComposer = ({ dataset }: { dataset: Dataset }) => {
     [],
   );
 
-  const onSubmit = () => searchForData(formsToQuery(dataset, forms));
+  const onSubmit = () => searchForData(formsToQuery(dataset, forms, globalFilters));
 
   const nextPage = () => {
     if (!results) {
@@ -264,7 +302,7 @@ const QueryComposer = ({ dataset }: { dataset: Dataset }) => {
     }
 
     const data = {
-      ...formsToQuery(dataset, forms),
+      ...formsToQuery(dataset, forms, globalFilters),
       page: results.page + 1,
     };
 
@@ -277,7 +315,7 @@ const QueryComposer = ({ dataset }: { dataset: Dataset }) => {
     }
 
     const data = {
-      ...formsToQuery(dataset, forms),
+      ...formsToQuery(dataset, forms, globalFilters),
       page: results.page - 1,
     };
 
@@ -304,6 +342,12 @@ const QueryComposer = ({ dataset }: { dataset: Dataset }) => {
           onSubmit={onSubmit}
         />
       ))}
+
+      <GlobalFilters
+        globalFiltersDataset={dataset.global_filters}
+        globalFilters={globalFilters}
+        setGlobalFilters={setGlobalFilters}
+      />
 
       <AddRemoveForms
         disabled={searchInProgress}
