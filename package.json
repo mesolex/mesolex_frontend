@@ -37,7 +37,6 @@
     "webpack": "^5.2.0"
   },
   "devDependencies": {
-    "@types/lodash-es": "^4.17.4",
     "prettier": "2.2.1",
     "sass": "^1.37.5"
   },

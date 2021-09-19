@@ -5,59 +5,12 @@ import isEmpty from 'lodash/isEmpty';
 import AudioPlayer, { RHAP_UI } from 'react-h5-audio-player';
 import Card from 'react-bootstrap/Card';
 
-interface Example {
-  original: {
-    text: string;
-  };
-  translation: {
-    text: string;
-  }
-}
-
-interface Sense {
-  sense: string;
-  ostentives: Array<string>;
-  examples: Array<Example>;
-}
-
-interface GrammarGroup {
-  part_of_speech: string;
-}
-
-interface NonNativeEtymology {
-  value: string;
-}
-
-interface Note {
-  note_type: string;
-  text: string;
-}
-
-interface Media {
-  url: string;
-}
-
-interface Item {
-  headword: string;
-  media: Array<Media>;
-  citation_forms: Array<string>;
-  variant_forms: Array<string>;
-  glosses: Array<string>;
-  grammar_groups: Array<GrammarGroup>;
-  categories: Array<string>;
-  non_native_etymologies: Array<NonNativeEtymology>;
-  senses: Array<Sense>;
-  notes: Array<Note>;
-}
-
-const safe = (text: string) => (
+const safe = (text) => (
   <span dangerouslySetInnerHTML={{__html: text}} />
 );
 
 const Azz = ({
   item,
-}: {
-  item: Item;
 }) => {
   return (
     <Card className="mb-4">
@@ -68,7 +21,7 @@ const Azz = ({
 
         {
           !isEmpty(item.media)
-          && item.media.map(({ url }: { url: string }, i: number) => (
+          && item.media.map(({ url }, i) => (
             /**
              * TODO: replace this with a properly styled element
              */
@@ -120,7 +73,7 @@ const Azz = ({
           && <>
             &nbsp;|&nbsp;
             <i>Categoría gramatical: </i>
-            {safe(item.grammar_groups.map(({ part_of_speech }: GrammarGroup) => part_of_speech).join(', '))}
+            {safe(item.grammar_groups.map(({ part_of_speech }) => part_of_speech).join(', '))}
           </>
         }
 
@@ -139,7 +92,7 @@ const Azz = ({
           && <>
             &nbsp;|&nbsp;
             <i>Palabras con elementos no de náhuat: </i>
-            {safe(item.non_native_etymologies.map(({ value }: NonNativeEtymology) => value).join(', '))}
+            {safe(item.non_native_etymologies.map(({ value }) => value).join(', '))}
           </>
         }
       </Card.Header>
@@ -150,7 +103,7 @@ const Azz = ({
           <Card.Body>
             <ol className="search-results-list">
               {
-                item.senses.map((sense: Sense) => (
+                item.senses.map((sense) => (
                   <li>
                     <Card.Text>
                       <p>
@@ -189,7 +142,7 @@ const Azz = ({
         && (
           <Card.Footer>
             {
-              item.notes.map((note: Note) => {
+              item.notes.map((note) => {
                 switch (note.note_type) {
                   case 'semantics':
                     return <div><strong>Notas semánticas: </strong>{ safe(note.text) }</div>

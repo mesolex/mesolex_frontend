@@ -20,16 +20,6 @@ import QueryForm from './query-form';
 import Results from './results';
 import { DEFAULT_FILTER_TYPE } from '../constants';
 
-import {
-  ApiQuery,
-  ApiQueryComponent,
-  ControlledVocabField,
-  Dataset,
-  QueryFormData,
-  SearchResults,
-  GlobalFilter,
-} from '../types';
-
 /**
  * Returns a derived setter for an individual form within the state.
  *
@@ -38,10 +28,10 @@ import {
  * @param setForms - Form state setter
  */
 const setFormFor = (
-  key: string,
-  forms: Array<QueryFormData>,
-  setForms: React.Dispatch<React.SetStateAction<Array<QueryFormData>>>,
-) => (newForm: object) =>
+  key,
+  forms,
+  setForms,
+) => (newForm) =>
 setForms(forms.map(form =>
   form.key === key ? {
     ...form,
@@ -60,17 +50,17 @@ setForms(forms.map(form =>
  * @returns 
  */
 const formSetterFor = (
-  k: string,
-  key: string,
-  forms: Array<QueryFormData>,
-  setForms: React.Dispatch<React.SetStateAction<Array<QueryFormData>>>,
+  k,
+  key,
+  forms,
+  setForms,
 ) => {
   const setForm = setFormFor(key, forms, setForms);
-  return (newValue: string) =>
+  return (newValue) =>
     setForm({ [k]: newValue });
 }
 
-const defaultForDataset = (dataset: Dataset): QueryFormData => {
+const defaultForDataset = (dataset) => {
   const [ firstFilterableField ] = dataset.filterable_fields;
   return Object.assign(
     {
@@ -88,11 +78,7 @@ const AddRemoveForms = ({
   disabled,
   onAddFilter,
   onSubmit,
-}: {
-  disabled: boolean;
-  onAddFilter: () => void;
-  onSubmit: () => Promise<void>;
-}): JSX.Element => (
+}) => (
   <Form.Group>
     <Button
       onClick={onAddFilter}
@@ -119,12 +105,6 @@ const Pagination = ({
   total,
   nextPage,
   prevPage,
-}: {
-  page: number;
-  pageSize: number;
-  total: number;
-  nextPage: () => void;
-  prevPage: () => void;
 }) => {
   const hasPrev = page > 1;
   const totalPages = Math.ceil(total / pageSize);
@@ -155,11 +135,7 @@ const Pagination = ({
   );
 };
 
-const GlobalFilters = (props: {
-  globalFiltersDataset: Array<GlobalFilter>;
-  globalFilters: { [fieldName: string]: boolean };
-  setGlobalFilters: React.Dispatch<React.SetStateAction<{ [fieldName: string]: boolean}>>;
-}): JSX.Element => (
+const GlobalFilters = (props) => (
   <Form.Group>
     { props.globalFiltersDataset.map(({ field, label }, i) => (
       <Form.Check
@@ -167,7 +143,7 @@ const GlobalFilters = (props: {
         checked={props.globalFilters[field]}
         label={label}
         name={field}
-        onChange={(event): void => {
+        onChange={(event) => {
           props.setGlobalFilters((prevGlobalFilters) => ({
             ...prevGlobalFilters,
             [field]: event.target.checked,
@@ -178,14 +154,14 @@ const GlobalFilters = (props: {
   </Form.Group>
 );
 
-const groupForms = (acc: Array<Array<QueryFormData>>, forms: Array<QueryFormData>): Array<Array<QueryFormData>> => {
+const groupForms = (acc, forms) => {
   if (isEmpty(forms)) {
     return acc;
   }
 
   const [head, ...tail] = forms;
-  const nextConjunctGroup = takeWhile(tail, (form: QueryFormData) => form.operator === 'and' || form.operator === 'and_n');
-  const nextRest = dropWhile(tail, (form: QueryFormData) => form.operator === 'and' || form.operator === 'and_n');
+  const nextConjunctGroup = takeWhile(tail, (form) => form.operator === 'and' || form.operator === 'and_n');
+  const nextRest = dropWhile(tail, (form) => form.operator === 'and' || form.operator === 'and_n');
 
   return groupForms(
     [ ...acc, [ head, ...nextConjunctGroup ]],
@@ -193,7 +169,7 @@ const groupForms = (acc: Array<Array<QueryFormData>>, forms: Array<QueryFormData
   );
 };
 
-const formToApiQuery = (dataset: Dataset) => (form: QueryFormData): ApiQueryComponent => {
+const formToApiQuery = (dataset) => (form) => {
   const {
     typeTag,
     filterType,
@@ -215,10 +191,10 @@ const formToApiQuery = (dataset: Dataset) => (form: QueryFormData): ApiQueryComp
 };
 
 const formsToQuery = (
-  dataset: Dataset,
-  forms: Array<QueryFormData>,
-  globalFilters: { [fieldName: string]: boolean },
-): ApiQuery => {
+  dataset,
+  forms,
+  globalFilters,
+) => {
   const groupedForms = groupForms([], forms.filter(form => form.value !== ''));
 
   // const globalModifiers = keys(globalFilters).map(key => ({ name: key }));
@@ -233,13 +209,13 @@ const formsToQuery = (
   }; 
 };
 
-const QueryComposer = ({ dataset }: { dataset: Dataset }) => {
+const QueryComposer = ({ dataset }) => {
   const [searchInProgress, setSearchInProgress] = useState(false);
-  const [results, setResults] = useState(null as SearchResults | null);
+  const [results, setResults] = useState(null);
 
   const defaultFilter = useMemo(() => defaultForDataset(dataset), [dataset]);
   const [forms, setForms] = useState([
-    { ...defaultFilter, key: uniqueId() } as QueryFormData,
+    { ...defaultFilter, key: uniqueId() },
   ]);
   const [globalFilters, setGlobalFilters] = useState(
     fromPairs(dataset.global_filters.map(({ field, label }) => [field, false])),
@@ -270,7 +246,7 @@ const QueryComposer = ({ dataset }: { dataset: Dataset }) => {
   const controlledVocabFields = useMemo(
     () => dataset.filterable_fields.filter(field => !isUndefined(field.items)),
     [dataset],
-  ) as Array<ControlledVocabField>;
+  );
 
   const searchFields = useMemo(
     () => dataset.filterable_fields.filter(field => field.length === 'long'),
@@ -279,7 +255,7 @@ const QueryComposer = ({ dataset }: { dataset: Dataset }) => {
 
   const searchForData = useMemo(
     () => {
-      return async (data: any) => {
+      return async (data) => {
         setSearchInProgress(true);
   
         const response = await axios.post(

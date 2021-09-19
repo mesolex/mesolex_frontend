@@ -8,12 +8,7 @@ import Azz from './results/azz';
 
 const Results = ({
   dataset,
-  page,
   data,
-}: {
-  dataset: string;
-  page: number;
-  data: Array<object>;
 }) => {
   const ResultComponent = useMemo(
     () => {

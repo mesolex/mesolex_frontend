@@ -2,16 +2,9 @@ import * as React from 'react';
 
 import Form from 'react-bootstrap/Form';
 
-import { SelectProps } from '../types';
-
-interface FilterSelectorProps extends SelectProps {
-  controlled: boolean;
-  textSearch: boolean;
-}
-
 const FilterSelector = React.forwardRef((
-  props: FilterSelectorProps,
-  ref: React.Ref<HTMLSelectElement>,
+  props,
+  ref,
 ) => (
   <Form.Control
     ref={ref}

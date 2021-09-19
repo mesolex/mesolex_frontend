@@ -13,7 +13,6 @@ import map from 'lodash/map';
 import some from 'lodash-es/some';
 
 import FilterSelector from './filter-selector';
-import { ControlledVocabField, SelectProps, ExtraField, FormSetters, FilterableField } from '../types';
 import { humanReadableFilters } from '../util';
 
 /**
@@ -28,11 +27,7 @@ import { humanReadableFilters } from '../util';
   filterType,
   extraFields,
   extraFieldKey,
-}: {
-  filterType: string;
-  extraFields: Array<ExtraField>;
-  extraFieldKey: string;
-}): boolean => {
+}) => {
   const config = find(extraFields, ({ field }) => field === extraFieldKey);
 
   if (isEmpty(config) || config === undefined) {
@@ -48,7 +43,7 @@ import { humanReadableFilters } from '../util';
   return false;
 };
 
-const OperatorSelect = React.forwardRef((props: SelectProps, ref: React.Ref<HTMLSelectElement>) => (
+const OperatorSelect = React.forwardRef((props, ref) => (
   <Form.Control
     ref={ref}
     as="select"
@@ -64,13 +59,9 @@ const OperatorSelect = React.forwardRef((props: SelectProps, ref: React.Ref<HTML
   </Form.Control>
 ));
 
-interface FieldSelectProps extends SelectProps {
-  fields: Array<FilterableField>;
-}
-
 const FieldSelect = React.forwardRef((
-  props: FieldSelectProps,
-  ref: React.Ref<HTMLSelectElement>,
+  props,
+  ref,
 ) => (
   <Form.Control
     ref={ref}
@@ -90,14 +81,14 @@ const FieldSelect = React.forwardRef((
 ));
 
 const isControlled = (
-  fieldName: string,
-  controlledVocabFields: Array<ControlledVocabField>,
-): boolean => some(controlledVocabFields, ({ field }) => field === fieldName);
+  fieldName,
+  controlledVocabFields,
+) => some(controlledVocabFields, ({ field }) => field === fieldName);
 
 const isTextSearch = (
-  fieldName: string,
-  searchFields: Array<FilterableField>,
-): boolean => some(searchFields, ({ field }) => field === fieldName);
+  fieldName,
+  searchFields,
+) => some(searchFields, ({ field }) => field === fieldName);
 
 
 /**
@@ -107,10 +98,10 @@ const isTextSearch = (
  * become a text search field, it can only be "matches"; etc.
  */
  const propagatedFilterConditions = (
-  filterOn: string,
-  controlledVocabFields: Array<ControlledVocabField>,
-  searchFields: Array<FilterableField>,
-): object => {
+  filterOn,
+  controlledVocabFields,
+  searchFields,
+) => {
   if (isControlled(filterOn, controlledVocabFields)) {
     return { filterType: 'exactly_equals' };
   }
@@ -137,23 +128,9 @@ const QueryForm = ({
   extraFieldValues,
   deleter,
   onSubmit,
-}: {
-  operator: string;
-  filterType: string;
-  typeTag: string;
-  value: string;
-  i: number;
-  setters: FormSetters;
-  controlledVocabFields: Array<ControlledVocabField>;
-  filterableFields: Array<FilterableField>;
-  searchFields: Array<FilterableField>;
-  extraFields: Array<ExtraField>;
-  extraFieldValues: any;
-  deleter: () => void;
-  onSubmit: () => Promise<void>;
 }) => {
   const controlledVocabFieldItems = (isControlled(typeTag, controlledVocabFields)
-    ? (find(controlledVocabFields, ({ field }) => field === typeTag) as ControlledVocabField).items
+    ? (find(controlledVocabFields, ({ field }) => field === typeTag)).items
     : []);
 
   return (
@@ -182,7 +159,7 @@ const QueryForm = ({
                 ? (
                   <Dropdown.Item
                     as={OperatorSelect}
-                    onChange={(event: any): void => setters.operator(event.target.value)}
+                    onChange={(event) => setters.operator(event.target.value)}
                     value={operator}
                   />
                 )
@@ -192,7 +169,7 @@ const QueryForm = ({
             <Dropdown.Item
               as={FieldSelect}
               fields={filterableFields}
-              onChange={(event: any): void => {
+              onChange={(event) => {
                 setters.form({
                   typeTag: event.target.value,
                   ...propagatedFilterConditions(
@@ -209,7 +186,7 @@ const QueryForm = ({
             <Dropdown.Item
               as={FilterSelector}
               controlled={isControlled(typeTag, controlledVocabFields)}
-              onChange={(event: any): void => setters.filterType(event.target.value)}
+              onChange={(event) => setters.filterType(event.target.value)}
               textSearch={isTextSearch(typeTag, searchFields)}
               value={filterType}
             />
@@ -225,7 +202,7 @@ const QueryForm = ({
                 })}
                 label={label}
                 key={label}
-                onChange={(event): void => setters[field](event.target.checked)}
+                onChange={(event) => setters[field](event.target.checked)}
               />
             ))}
           </DropdownButton>
@@ -237,7 +214,7 @@ const QueryForm = ({
                   as="select"
                   custom
                   name={`form-${i}-query_string`}
-                  onChange={(event: React.ChangeEvent<HTMLInputElement>): void => setters.value(event.target.value)}
+                  onChange={(event) => setters.value(event.target.value)}
                   value={some(controlledVocabFieldItems, ({ value: v }) => v === value)
                     ? value
                     : controlledVocabFieldItems[0].value}
@@ -254,7 +231,7 @@ const QueryForm = ({
                 <Form.Control
                   placeholder={'Ingrese la consulta aquí'}
                   name={`form-${i}-query_string`}
-                  onChange={(event): void => setters.value(event.target.value)}
+                  onChange={(event) => setters.value(event.target.value)}
                   type="text"
                   value={value}
                 />

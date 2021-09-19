@@ -1,9 +1,5 @@
 import fromPairs from 'lodash-es/fromPairs';
-import isUndefined from 'lodash-es/isUndefined';
 import map from 'lodash-es/map';
-import negate from 'lodash-es/negate';
-
-import { FilterableField } from './types';
 
 export const humanReadableFilters = ({
   i,
@@ -11,24 +7,7 @@ export const humanReadableFilters = ({
   typeTag,
   filterType,
   filterableFields,
-}: {
-  i: number;
-  operator:
-    'and'
-    | 'and_n'
-    | 'or'
-    | 'or_n';
-  typeTag: string;
-  filterType:
-    'begins_with'
-    | 'ends_with'
-    | 'contains'
-    | 'contains_word'
-    | 'exactly_equals'
-    | 'regex'
-    | 'text_search';
-  filterableFields: Array<FilterableField>;
-}): string => {
+}) => {
   const initOpDict = {
     and: '',
     and_n: 'no',
@@ -53,7 +32,7 @@ export const humanReadableFilters = ({
     text_search: 'coincide con',
   };
 
-  const filterableFieldsDict: { [fieldName: string]: string } = fromPairs(
+  const filterableFieldsDict = fromPairs(
     map(filterableFields, ({ field, label }) => [field, label]),
   );
 
