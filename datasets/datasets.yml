@@ -6,6 +6,14 @@
       label: Activar flexibilidad ortográfica
       constraints:
         - no_regex
+    - field: bilingual
+      label: Activar búsqueda bilingüe
+      constraints:
+        - no_regex
+    - field: thesaurus
+      label: Activar tesauro
+      constraints:
+        - no_regex
   global_filters:
     - field: only_with_sound
       label: Sólo mostrar entradas con sonidos
