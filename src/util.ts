@@ -10,14 +10,23 @@ export const humanReadableFilters = ({
   operator,
   typeTag,
   filterType,
-  nahuatOrthography,
   filterableFields,
 }: {
   i: number;
-  operator: string;
+  operator:
+    'and'
+    | 'and_n'
+    | 'or'
+    | 'or_n';
   typeTag: string;
-  filterType: string;
-  nahuatOrthography?: boolean;
+  filterType:
+    'begins_with'
+    | 'ends_with'
+    | 'contains'
+    | 'contains_word'
+    | 'exactly_equals'
+    | 'regex'
+    | 'text_search';
   filterableFields: Array<FilterableField>;
 }): string => {
   const initOpDict = {
@@ -48,14 +57,9 @@ export const humanReadableFilters = ({
     map(filterableFields, ({ field, label }) => [field, label]),
   );
 
-  const modifiers: Array<string> = [
-    nahuatOrthography ? 'flex. ort.' : undefined,
-  ].filter(negate(isUndefined)) as Array<string>;
-
   const prefix = i === 0 ? initOpDict[operator] : opDict[operator];
   const typeTagLabel = filterableFieldsDict[typeTag] || 'ítem';
   const filterLabel = filterDict[filterType];
-  const modifiersLabel = modifiers.length ? `(${modifiers.join(', ')})` : '';
 
-  return [prefix, typeTagLabel, filterLabel, modifiersLabel].join(' ');
+  return [prefix, typeTagLabel, filterLabel].join(' ');
 };
