@@ -150,6 +150,8 @@ const Azz = ({
                     return <div><strong>Notas morfológicas: </strong>{ safe(note.text) }</div>
                   case 'note':
                     return <div><strong>Notas gramaticales: </strong>{ safe(note.text) }</div>
+                  default:
+                    return null;
                 }
               })
             }

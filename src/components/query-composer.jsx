@@ -240,7 +240,7 @@ const QueryComposer = ({ dataset }) => {
   );
   const formExtraFieldValues = useMemo(
     () => forms.map(form => pick(form, dataset.extra_fields.map(({ field }) => field))),
-    [forms],
+    [forms, dataset],
   );
 
   const controlledVocabFields = useMemo(
