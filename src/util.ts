@@ -10,7 +10,6 @@ export const humanReadableFilters = ({
   operator,
   typeTag,
   filterType,
-  vln,
   nahuatOrthography,
   filterableFields,
 }: {
@@ -18,7 +17,6 @@ export const humanReadableFilters = ({
   operator: string;
   typeTag: string;
   filterType: string;
-  vln?: boolean;
   nahuatOrthography?: boolean;
   filterableFields: Array<FilterableField>;
 }): string => {
@@ -51,7 +49,6 @@ export const humanReadableFilters = ({
   );
 
   const modifiers: Array<string> = [
-    vln ? 'NCV' : undefined,
     nahuatOrthography ? 'flex. ort.' : undefined,
   ].filter(negate(isUndefined)) as Array<string>;
 
