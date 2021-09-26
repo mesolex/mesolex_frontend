@@ -10,7 +10,7 @@
       label: Activar búsqueda bilingüe
       constraints:
         - no_regex
-    - field: thesaurus
+    - field: es_thesaurus_lookup
       label: Activar tesauro
       constraints:
         - no_regex
